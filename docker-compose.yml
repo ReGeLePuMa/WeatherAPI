@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+  rest_api:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    networks:
+      - rest_api_network
+    env_file:
+      - .env
+    depends_on:
+      - db
+  
+  db:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      db_network:
+          ipv4_address: "${DB_HOST}"
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - db_network
+
+networks:
+  rest_api_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.100.0/24"
+          gateway: "192.168.100.1"
+  db_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.200.0/24"
+          gateway: "192.168.200.1"
+
+volumes:
+  pgdata:
+    driver: local
