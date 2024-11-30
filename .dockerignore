@@ -2,3 +2,8 @@ node_modules
 dist
 build
 *logs*
+.git*
+.vscode*
+*.md
+.prettierrc
+.eslintrc.js

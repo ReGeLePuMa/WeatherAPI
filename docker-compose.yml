@@ -8,6 +8,8 @@ services:
       - 5000:5000
     networks:
       - rest_api_network
+    links:
+      - db
     env_file:
       - .env
     depends_on:
@@ -21,8 +23,10 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      db_network:
-          ipv4_address: "${DB_HOST}"
+      - db_network
+      - rest_api_network
+    ports:
+      - 5432:5432
   
   adminer:
     image: adminer
@@ -37,14 +41,14 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: "192.168.100.0/24"
-          gateway: "192.168.100.1"
+        - subnet: 192.168.100.0/24
+          gateway: 192.168.100.1
   db_network:
     driver: bridge
     ipam:
       config:
-        - subnet: "192.168.200.0/24"
-          gateway: "192.168.200.1"
+        - subnet: 192.168.200.0/24
+          gateway: 192.168.200.1
 
 volumes:
   pgdata:
