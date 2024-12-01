@@ -35,12 +35,15 @@ services:
 networks:
   rest_api_network:
     driver: bridge
+    name: rest_api_network
     ipam:
       config:
         - subnet: 192.168.100.0/24
           gateway: 192.168.100.1
+
   db_network:
     driver: bridge
+    name: db_network
     ipam:
       config:
         - subnet: 192.168.200.0/24
