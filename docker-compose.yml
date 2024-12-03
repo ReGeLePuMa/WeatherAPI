@@ -1,5 +1,6 @@
 services:
   rest_api:
+    container_name: rest_api
     build:
       dockerfile: Dockerfile
     ports:
@@ -14,6 +15,7 @@ services:
   db:
     image: postgres
     restart: always
+    container_name: postgres_db
     env_file:
       - .env
     volumes:
@@ -27,10 +29,13 @@ services:
   adminer:
     image: adminer
     restart: always
+    container_name: admin_interface
     ports:
       - 8080:8080
     networks:
       - db_network
+    depends_on:
+      - db
 
 networks:
   rest_api_network:

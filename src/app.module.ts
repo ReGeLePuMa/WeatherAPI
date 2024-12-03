@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { CountriesModule } from './countries/countries.module';
 import { CitiesModule } from './cities/cities.module';
 import { TemperaturesModule } from './temperatures/temperatures.module';
+import { RouteLoggerMiddleware } from './logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -22,4 +23,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TemperaturesModule
   ],
 })
-export class AppModule { }
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RouteLoggerMiddleware).forRoutes('*');
+  }
+}
