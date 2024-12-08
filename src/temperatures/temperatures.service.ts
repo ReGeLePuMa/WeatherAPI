@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Temperature } from './entities/temperature.entity';
 import { TemperatureDTO } from './entities/temperature.dto';
+import { validateOrReject } from 'class-validator';
 @Injectable()
 export class TemperaturesService {
     constructor(
@@ -11,10 +12,14 @@ export class TemperaturesService {
     ) { }
 
     async createTemperature(temperature: TemperatureDTO): Promise<{ id: number }> {
-        const { idOras, valoare } = temperature;
-        if (typeof idOras !== 'number' || typeof valoare !== 'number') {
-            throw new BadRequestException('Invalid temperature data');
+        try {
+            await validateOrReject(temperature);
         }
+        catch (errors) {
+            throw new BadRequestException("Invalid temperature data");
+        }
+        const { idOras, valoare } = temperature;
+
 
         const existingCity = await this.temperatureRepository
             .createQueryBuilder('temperature')
@@ -89,11 +94,16 @@ export class TemperaturesService {
     }
 
     async updateTemperature(temperature: TemperatureDTO, id: number): Promise<void> {
-        const { idOras, valoare } = temperature;
-        if (typeof idOras !== 'number' || typeof valoare !== 'number') {
-            throw new BadRequestException('Invalid temperature data');
+        try {
+            await validateOrReject(temperature);
         }
-
+        catch (errors) {
+            throw new BadRequestException("Invalid temperature data");
+        }
+        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
+            throw new BadRequestException('Invalid temperature id');
+        }
+        const { idOras, valoare } = temperature;
         const existingTemperature = await this.temperatureRepository.findOne({ where: { id } });
 
         if (!existingTemperature) {

@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { validateOrReject } from 'class-validator';
 import { Country } from './entities/country.entity';
 import { CountryDTO } from './entities/country.dto';
 
@@ -12,10 +13,15 @@ export class CountriesService {
     ) { }
 
     async createCountry(country: CountryDTO): Promise<{ id: number }> {
-        const { nume, lat, lon } = country;
-        if (!nume || typeof nume !== 'string' || typeof lat !== 'number' || typeof lon !== 'number') {
-            throw new BadRequestException('Invalid country data');
+        try {
+            await validateOrReject(country);
         }
+        catch (errors) {
+            throw new BadRequestException("Invalid country data");
+        }
+
+        const { nume, lat, lon } = country;
+
         const existingCountry = await this.countryRepository.findOne({ where: { nume_tara: nume } });
         if (existingCountry) {
             throw new ConflictException('Country already exists');
@@ -34,6 +40,12 @@ export class CountriesService {
     }
 
     async updateCountry(country: CountryDTO, id: number): Promise<void> {
+        try {
+            await validateOrReject(country);
+        }
+        catch (errors) {
+            throw new BadRequestException("Invalid country data");
+        }
         if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
             throw new BadRequestException('Invalid country id');
         }

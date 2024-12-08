@@ -1,8 +1,8 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { validateOrReject } from 'class-validator';
 import { Repository } from 'typeorm';
 import { City } from './entities/city.entity';
-import { Country } from 'src/countries/entities/country.entity';
 import { CityDTO } from './entities/city.dto';
 @Injectable()
 export class CitiesService {
@@ -13,8 +13,12 @@ export class CitiesService {
 
     async createCity(city: CityDTO): Promise<{ id: number }> {
         const { nume, lat, lon, idTara } = city;
-        if (!nume || typeof nume !== 'string' || typeof lat !== 'number' || typeof lon !== 'number' || typeof idTara !== 'number') {
-            throw new BadRequestException('Invalid city data');
+
+        try {
+            await validateOrReject(city);
+        }
+        catch (errors) {
+            throw new BadRequestException("Invalid city data");
         }
 
         const existingCountry = await this.cityRepository
@@ -45,7 +49,7 @@ export class CitiesService {
         }));
     }
 
-    async getCitiesByCountry(id: number| null): Promise<CityDTO[]> {
+    async getCitiesByCountry(id: number | null): Promise<CityDTO[]> {
         return (await this.cityRepository.find({ where: { id_tara: id } })).map(city => ({
             id: city.id,
             idTara: city.id_tara,
@@ -56,6 +60,12 @@ export class CitiesService {
     }
 
     async updateCity(city: CityDTO, id: number): Promise<void> {
+        try {
+            await validateOrReject(city);
+        }
+        catch (errors) {
+            throw new BadRequestException("Invalid city data");
+        }
         if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
             throw new BadRequestException('Invalid city id');
         }
