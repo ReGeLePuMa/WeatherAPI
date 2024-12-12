@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional, Min, Max } from 'class-validator';
 
 export class CityDTO {
     @IsOptional()
@@ -12,8 +12,12 @@ export class CityDTO {
     nume: string;
 
     @IsNumber()
+    @Min(-90)
+    @Max(90)
     lat: number;
 
     @IsNumber()
+    @Min(-180)
+    @Max(180)
     lon: number;
 }
