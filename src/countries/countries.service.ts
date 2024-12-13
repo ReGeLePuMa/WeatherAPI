@@ -46,7 +46,7 @@ export class CountriesService {
         catch (errors) {
             throw new BadRequestException("Invalid country data");
         }
-        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
+        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0 || id !== country.id) {
             throw new BadRequestException('Invalid country id');
         }
         const { nume, lat, lon } = country;

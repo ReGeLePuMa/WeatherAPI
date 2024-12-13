@@ -100,7 +100,7 @@ export class TemperaturesService {
         catch (errors) {
             throw new BadRequestException("Invalid temperature data");
         }
-        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
+        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0 || id !== temperature.id) {
             throw new BadRequestException('Invalid temperature id');
         }
         const { idOras, valoare } = temperature;

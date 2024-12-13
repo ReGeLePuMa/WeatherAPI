@@ -31,7 +31,7 @@ export class CitiesService {
         if (!existingCountry) {
             throw new NotFoundException('Country does not exist');
         }
-        const existingCity = await this.cityRepository.findOne({ where: { nume_oras: nume } });
+        const existingCity = await this.cityRepository.findOne({ where: { nume_oras: nume, id_tara: idTara } });
         if (existingCity) {
             throw new ConflictException('City already exists');
         }
@@ -66,7 +66,7 @@ export class CitiesService {
         catch (errors) {
             throw new BadRequestException("Invalid city data");
         }
-        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0) {
+        if (!id || typeof id !== 'number' || isNaN(id) || id <= 0 || id !== city.id) {
             throw new BadRequestException('Invalid city id');
         }
         const { nume, lat, lon, idTara } = city;
